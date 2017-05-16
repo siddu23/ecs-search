@@ -5,25 +5,27 @@ currently supports search of -
 - pratilipis (content)
 """
 
-import ConfigParser
-import requests
 import os
 import sys
+
+# set the base path
+sys.path.append("%s/lib" % os.getcwd())
+base_path = os.path.abspath(os.path.dirname(__file__))
+
+import argparse
+import ConfigParser
+import requests
 import inspect
 import simplejson as json
 import re
 
 from datetime import datetime
 from bottle import route, run, request, response, template
-from lib.bigquery_ops import stream_data
-
-
-# set the base path
-base_path = os.path.abspath(os.path.dirname(__file__))
-config_path = "%s/%s" % (base_path.replace('src', 'config'), "search.cnf")
+import bigquery_ops
 
 
 # fetch config
+config_path = "%s/%s" % (base_path.replace('src', 'config'), "search.cnf")
 search_config = ConfigParser.RawConfigParser()
 search_config.read(config_path)
 url_path = search_config.get("SOLR", "BASE_URL")
@@ -41,7 +43,7 @@ def api_response(status_code, msg, data=None):
 
 
 def log_formatter(fname, msg):
-    return "[%s] %s, %s" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), fname, msg) 
+    return "[%s] %s, %s" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"), fname, msg) 
 
 
 @route('/ping')
@@ -129,6 +131,8 @@ def search():
     """
     search
     """
+    print log_formatter(inspect.stack()[0][3], "search start")
+
     accepttxt = request.headers.get('Accept', "version=1.0")
     searchtxt = re.search( r'version=(\d.\d)', accepttxt.lower())
     version = 1.0
@@ -138,6 +142,7 @@ def search():
     userid = request.query.get('userid', None)
     text = request.query.get('text', None)
     lang = request.query.get('lang', None)
+    platform = request.query.get('platform', 'web')
     is_active = request.query.get('is_active', True)
     limit = request.query.get('limit', 20)
     offset = request.query.get('offset', 0)
@@ -145,8 +150,9 @@ def search():
     if text is None:
         return api_response(400, "Bad Request")
         
-    log_data = {lang, user_id, platform, text, datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-    stream_data('search', 'user_activity', log_data)
+    log_data = (lang, userid, platform, text, datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    if not bigquery_ops.stream_data('search', 'user_activity', log_data):
+        print log_formatter(inspect.stack()[0][3], "failed logging request")
 
     try:
         pratilipi_count = 0
@@ -192,7 +198,6 @@ def search():
         # author_name, summary, genre, chapter_count, rating_count, content_type, cover_image, author_id, author_name_en
         state_filter = " AND state:PUBLISHED" if is_active else ""
         lang_filter = " AND lang:%s" % lang if lang is not None else ""
-        url = url_path 
         url = url_path
         url = "%s/solr/pratilipi/select" % url
         url = "%s?wt=json&q=*%s*%s%s" % (url, text, lang_filter, state_filter)
@@ -247,6 +252,11 @@ def search():
         return api_response(500, 'Internal Server Error')
 
 
-run(host='127.0.0.1', port='2579')
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("host", type=str, help="host")
+    parser.add_argument("port", type=int, help="port")
+    args = parser.parse_args()
 
+    run(host=args.host, port=args.port)
 

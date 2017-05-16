@@ -15,6 +15,7 @@ import re
 
 from datetime import datetime
 from bottle import route, run, request, response, template
+from lib.bigquery_ops import stream_data
 
 
 # set the base path
@@ -144,7 +145,8 @@ def search():
     if text is None:
         return api_response(400, "Bad Request")
         
-    print log_formatter(inspect.stack()[0][3], "%s %s %s %s %s" % (userid, version, limit, offset, text))
+    log_data = {lang, user_id, platform, text, datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+    stream_data('search', 'user_activity', log_data)
 
     try:
         pratilipi_count = 0

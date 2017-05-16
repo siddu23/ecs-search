@@ -13,6 +13,7 @@ import requests
 import inspect
 import simplejson as json
 import re
+import threading
 
 from datetime import datetime
 from bottle import route, run, request, response, template
@@ -235,11 +236,12 @@ def search():
                 pratilipi.append(row['pratilipi_id'])
 
         response = {}
+        """
         if author_count > 0:
             response['authors_found'] = author_count
-            url = "{}".format(AUTHOR_SERVICE)
+            url = "{}".format(AUTHOR_URL)
             param_dict = {'id':author}
-            service_response = requests.get(url, param=param_dict)
+            service_response = requests.get(url, params=param_dict)
             if service_response.status_code == 200:
                 response['authors'] = json.loads(service_response.text)
             else:
@@ -247,9 +249,9 @@ def search():
 
         if pratilipi_count > 0:
             response['pratilipis_found'] = pratilipi_count
-            url = "{}".format(PRATILIPI_SERVICE)
+            url = "{}".format(PRATILIPI_URL)
             param_dict = {'id':pratilipi}
-            service_response = requests.get(url, param=param_dict)
+            service_response = requests.get(url, params=param_dict)
             if service_response.status_code == 200:
                 response['pratilips'] = json.loads(service_response.text)
             else:
@@ -257,12 +259,16 @@ def search():
 
         if not bool(response):
             return api_response(204, "No Content")
+        """
 
         log_data = (lang, userid, platform, text,
                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     response.get('authors_found', 0), response.get('pratilipis_found', 0))
-        if not stream_data('search', 'user_activity', log_data):
-            print log_formatter(inspect.stack()[0][3], "failed logging request")
+        #if not stream_data('search', 'user_activity', log_data):
+        #    print log_formatter(inspect.stack()[0][3], "failed logging request")
+        thr = threading.Thread(target=stream_data, args=('search', 'user_activity', log_data))
+        print log_formatter(inspect.stack()[0][3], "starting thread")
+        thr.start()
 
         print log_formatter(inspect.stack()[0][3], "search done")
         return api_response(200, "Success", response)

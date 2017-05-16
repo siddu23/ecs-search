@@ -1,2 +1,8 @@
 [SOLR]
-BASE_URL = http://localhost:8983
+BASE_URL = http://localhost:8983/solr
+
+[PRATILIPI_SERVICE]
+BASE_URL = http://pratilipi.com/pratilipis
+
+[AUTHOR_SERVICE]
+BASE_URL = http://pratilipi.com/authors

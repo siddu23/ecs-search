@@ -27,7 +27,7 @@ def create_table(dataset_name='search', table_name='user_activity'):
     # Set the table schema
     table.schema = (
         bigquery.SchemaField('lang', 'STRING'),
-        bigquery.SchemaField('user_id', 'STRING'),
+        bigquery.SchemaField('userid', 'STRING'),
         bigquery.SchemaField('platform', 'STRING'),
         bigquery.SchemaField('keyword', 'STRING'),
         bigquery.SchemaField('activity_dt','DATETIME'),
@@ -77,16 +77,13 @@ def stream_data(dataset_name, table_name, json_data):
     bigquery_client = bigquery.Client()
     dataset = bigquery_client.dataset(dataset_name)
     table = dataset.table(table_name)
-    data = json.loads(json_data)
 
     # Reload the table to get the schema.
     table.reload()
 
-    rows = [data]
+    rows = [json_data]
     errors = table.insert_data(rows)
 
-    if not errors:
-        print('Loaded 1 row into {}:{}'.format(dataset_name, table_name))
-    else:
-        print('Errors:')
-        pprint(errors)
+    if errors:
+        return False
+    return True

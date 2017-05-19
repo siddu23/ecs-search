@@ -1,5 +1,14 @@
 from google.cloud import bigquery
 
+
+def connect_gcloud(dataset_name, table_name):
+    bigquery_client = bigquery.Client()
+    dataset = bigquery_client.dataset(dataset_name)
+    table = dataset.table(table_name)
+    table.reload()
+    return table
+
+
 def create_dataset(dataset_name='search'):
     """create new dataset
     search will have a new dataset
@@ -73,14 +82,7 @@ def list_rows(dataset_name='search', table_name='user_activity'):
         print(format_string.format(*row))
 
 
-def stream_data(dataset_name, table_name, json_data):
-    bigquery_client = bigquery.Client()
-    dataset = bigquery_client.dataset(dataset_name)
-    table = dataset.table(table_name)
-
-    # Reload the table to get the schema.
-    table.reload()
-
+def stream_data(table, json_data):
     rows = [json_data]
     errors = table.insert_data(rows)
 

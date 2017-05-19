@@ -6,3 +6,7 @@ BASE_URL = http://pratilipi.com/pratilipis
 
 [AUTHOR_SERVICE]
 BASE_URL = http://pratilipi.com/authors
+
+[TOP_SEARCH]
+LIMIT = 10
+AGE_IN_MIN = 3600

@@ -11,7 +11,6 @@ import argparse
 import requests
 import inspect
 import simplejson as json
-import threading
 
 from datetime import datetime
 from bottle import route, run, request, response
@@ -21,8 +20,7 @@ sys.path.append("%s/lib" % os.getcwd())
 BASE_PATH = os.path.abspath(os.path.dirname(__file__))
 
 import v1
-import bigquery_ops
-from commonfns import api_response, log_formatter
+from commonfns import api_response, log_formatter, config_builder, requested_api_version
 
 # fetch config
 CONFIG_DICT = config_builder(BASE_PATH)

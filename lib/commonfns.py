@@ -1,5 +1,6 @@
 import ConfigParser
 import re
+import bigquery_ops
 
 from datetime import datetime
 

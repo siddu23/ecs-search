@@ -1,43 +1,59 @@
-from commonfns import log_formatter, register_request
+from commonfns import log_formatter
+from datetime import datetime
 import bigquery_ops
+import requests
+import inspect
+import simplejson as json
+import threading
 
 
-def register_search_activity(data):
+def register_search_activity(url, data):
     """
     add an entry to solr core
     """
     try:
+        print log_formatter(inspect.stack()[0][3], "in register search solr")
         #prepare url for solr
-        url = "{}/{}".format(config_dict['solr_url'], "search_activity/update/json/docs?commit=true")
+        url = "{}/{}".format(url, "search_activity/update/json/docs?commit=true&wt=json")
 
-        print log_formatter(inspect.stack()[0][3], "solr url %s" % url)
+        print log_formatter(inspect.stack()[0][3], "solr url {} - {}".format(url, data))
 
-        response = requests.post(url, data)
+        response = requests.post(url, data=json.dumps(data))
+        print log_formatter(inspect.stack()[0][3], "got resp search solr")
+
         if response.status_code != 200:
             return False
-        if json.loads(response["responseHeader"]["status"]) != 0:
+        if json.loads(response.text)["responseHeader"]["status"] != 0:
             return False
     except Exception as err:
-        print log_formatter(inspect.stack()[0][3], "failed logging search activity")
+        print log_formatter(inspect.stack()[0][3], "failed logging search activity - {}".format(str(err)))
         return False
     return True
 
 
-def register_request(log_user_activity, param_dict):
+def register_request(config_dict, param_dict):
     #insert into solr - trending search
-    if param_dict['author_counter'] > 0 or param_dict['pratilipi_counter'] > 0:
+    print log_formatter(inspect.stack()[0][3], "in register_request")
+    if param_dict['author_found'] > 0 or param_dict['pratilipi_found'] > 0:
         data = {"activity_date": datetime.now().strftime("%Y-%m-%d"),
                 "activity_hour": datetime.now().strftime("%H"),
                 "platform": param_dict['platform'],
                 "lang": param_dict['lang'],
                 "keyword": param_dict['text']}
-        register_search_activity(data)
+        register_search_activity(config_dict['solr_url'],data)
 
+    print log_formatter(inspect.stack()[0][3], "done solr insert")
     #insert into bigquery - log all user activity
-    if not bigquery_ops.stream_data(log_user_activity, param_dict):
+    param_dict = (param_dict['lang'], param_dict['userid'], 
+                  param_dict['platform'], param_dict['text'],
+                  datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"),
+                  param_dict['author_found'],
+                  param_dict['pratilipi_found'])
+    if not bigquery_ops.stream_data(config_dict['log_user_activity'], param_dict):
         print log_formatter(inspect.stack()[0][3], "failed logging request")
         return False
 
+    print log_formatter(inspect.stack()[0][3], "done register_request")
     return True
 
 
@@ -112,6 +128,7 @@ def search(config_dict, data):
 
         #generate author response
         response = {}
+        """
         if author_count > 0:
             response['authors_found'] = author_count
             url = "{}".format(config_dict['author_url'])
@@ -136,12 +153,16 @@ def search(config_dict, data):
         #if response is empty
         if not bool(response):
             return [204, "No Content"]
+        """
 
         #register request for analysis
-        param_dict = (lang, userid, platform, text,
-                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                     author_count, pratilipis_count)
-        thr = threading.Thread(target=register_request, args=(config_dict['log_user_activity'], param_dict))
+        param_dict = {"lang": lang,
+                     "userid": userid,
+                     "platform": platform,
+                     "text": text,
+                     "author_found": author_count,
+                     "pratilipi_found": pratilipi_count}
+        thr = threading.Thread(target=register_request, args=(config_dict, param_dict))
         print log_formatter(inspect.stack()[0][3], "starting thread")
         thr.start()
 
@@ -164,15 +185,17 @@ def trending_search(config_dict, data):
     limit = config_dict['trending_limit']
     age = config_dict['trending_age']
 
+
     try:
         #fetch search activities
         #prepare url for solr
-        lang_filter = '{}'.format(lang) if lang is not None else '*'
         param_dict = {'wt':'json',
-                      'fl':'author_id',
-                      'sort':'score desc, read_count desc',
+                      'group':'true',
                       'rows':limit,
-                      'q':'*{}* AND state:{} AND lang:{}'.format(text, state_filter, lang_filter)}
+                      'group.field':'keyword',
+                      'fl':'activity_date,activity_hour,keyword',
+                      'sort':'score desc, read_count desc',
+                      'q':'lang:{} AND activity_date:[NOW-1DAY TO NOW]'.format(lang)}
         url = "{}/{}".format(config_dict['solr_url'], "author/select")
 
         print log_formatter(inspect.stack()[0][3], "solr url %s" % url)

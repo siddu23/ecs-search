@@ -180,7 +180,7 @@ def trending_search(config_dict, data):
     """
 
     #parse query dict
-    lang = data.get('lang', 'HINDI')
+    lang = data.get('lang', '*')
     platform = data.get('platform', 'web')
     limit = config_dict['trending_limit']
     age = config_dict['trending_age']
@@ -191,28 +191,31 @@ def trending_search(config_dict, data):
         #prepare url for solr
         param_dict = {'wt':'json',
                       'group':'true',
-                      'rows':limit,
                       'group.field':'keyword',
-                      'fl':'activity_date,activity_hour,keyword',
-                      'sort':'score desc, read_count desc',
-                      'q':'lang:{} AND activity_date:[NOW-1DAY TO NOW]'.format(lang)}
-        url = "{}/{}".format(config_dict['solr_url'], "author/select")
+                      'rows':100000,
+                      'fl':'keyword',
+                      'q':'activity_date:[NOW-1DAY TO NOW]'}
+                      #'q':'lang:{} AND activity_date:[NOW-1DAY TO NOW]'.format(lang)}
+        url = "{}/{}".format(config_dict['solr_url'], "search_activity/select")
 
         print log_formatter(inspect.stack()[0][3], "solr url %s" % url)
 
         #generate response
-        response = {'trending_keywords': []}
-        trending_keywords = []
+        trending_keywords = {}
         response = requests.get(url, params=param_dict)
         if response.status_code == 200:
             data = json.loads(response.text)
-            for row in data['response']['docs']:
-                response['trending_keywords'].append(row['keyword'])
+            for row in data['grouped']['keyword']['groups']:
+                trending_keywords[row['groupValue']] = row['doclist']['numFound']
 
-        #return response
+        temp = sorted(trending_keywords, key=trending_keywords.get, reverse=True)
+        if len(temp) == 0:
+            return [200, "Success"]
+
+        response = {'trending_keywords': temp[:int(limit)]}
+
         return [200, "Success", response]
     except Exception as err:
         print log_formatter(inspect.stack()[0][3], "failed while getting trending search - {}".format(str(err)))
         return [500, 'Internal Server Error']
-
 

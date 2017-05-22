@@ -11,7 +11,6 @@ import argparse
 import requests
 import inspect
 import simplejson as json
-
 from datetime import datetime
 from bottle import route, run, request, response
 
@@ -78,5 +77,3 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     run(host=args.host, port=args.port)
-
-

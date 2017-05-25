@@ -1,6 +1,6 @@
 import ConfigParser
 import re
-import bigquery_ops
+#import bigquery_ops
 
 from datetime import datetime
 
@@ -37,9 +37,9 @@ def config_builder(base_path):
     config_dict = {'solr_url': search_config.get("SOLR", "BASE_URL"),
                   'pratilipi_url': search_config.get("PRATILIPI_SERVICE", "BASE_URL"),
                   'author_url': search_config.get("AUTHOR_SERVICE", "BASE_URL"),
-                  'log_user_activity': bigquery_ops.connect_gcloud("search", "user_activity"),
                   'trending_limit': search_config.get("TOP_SEARCH", "LIMIT"),
                   'trending_age': search_config.get("TOP_SEARCH", "AGE_IN_MIN")}
+                  #'log_user_activity': bigquery_ops.connect_gcloud("search", "user_activity"),
     return config_dict
 
 

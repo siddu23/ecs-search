@@ -7,11 +7,11 @@ RUN apt-get update -y && \
 RUN apt-get install -y git curl
 RUN git clone https://github.com/Pratilipi/search
 
-EXPOSE 2579
-
 WORKDIR search
 
 RUN pip install -r requirements.txt
 
-CMD python src/main.py localhost 2579
+EXPOSE 8080
+
+CMD python src/main.py
 

@@ -1,6 +1,6 @@
 from commonfns import log_formatter
 from datetime import datetime
-import bigquery_ops
+#import bigquery_ops
 import requests
 import inspect
 import simplejson as json
@@ -49,10 +49,11 @@ def register_request(config_dict, param_dict):
                   datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"),
                   param_dict['author_found'],
                   param_dict['pratilipi_found'])
+    """
     if not bigquery_ops.stream_data(config_dict['log_user_activity'], param_dict):
         print log_formatter(inspect.stack()[0][3], "failed logging request")
         return False
-
+    """
     print log_formatter(inspect.stack()[0][3], "done register_request")
     return True
 

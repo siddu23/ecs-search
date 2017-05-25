@@ -1,5 +1,5 @@
 {
-    "family": "pratilipi.search.app",
+    "family": "pratilipi-search-app",
     "volumes": [
         {
             "name": "my-vol",
@@ -10,7 +10,7 @@
         {
             "environment": [],
             "name": "search",
-            "image": "gauripratilipi/search",
+            "image": "gauripratilipi/pratilipi-search",
             "cpu": 2,
             "memory": 256,
             "portMappings": [
@@ -26,9 +26,7 @@
                 }
             ],
             "entryPoint": [
-                "/usr/sbin/apache2",
-                "-D",
-                "FOREGROUND"
+                "python src/main.py"
             ],
             "essential": true
         }

@@ -24,7 +24,6 @@ oauth2client==4.1.0
 openpyxl==2.4.7
 packaging==16.8
 pep8==1.7.0
-pkg-resources==0.0.0
 protobuf==3.3.0
 pyasn1==0.2.3
 pyasn1-modules==0.0.8

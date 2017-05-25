@@ -7,7 +7,6 @@ currently supports search of -
 
 import os
 import sys
-import argparse
 import requests
 import inspect
 import simplejson as json
@@ -69,11 +68,5 @@ def trending_search():
 
     return api_response(result)
 
-
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("host", type=str, help="host")
-    parser.add_argument("port", type=int, help="port")
-    args = parser.parse_args()
-
-    run(host=args.host, port=args.port)
+    run()

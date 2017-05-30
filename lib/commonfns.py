@@ -31,7 +31,7 @@ def log_formatter(fname, msg):
 
 
 def config_builder(base_path):
-    config_path = "%s/%s" % (base_path.replace('src', 'config'), "search.cnf")
+    config_path = "%s/%s" % ('config', "search.cnf")
     search_config = ConfigParser.RawConfigParser()
     search_config.read(config_path)
     config_dict = {'solr_url': search_config.get("SOLR", "BASE_URL"),

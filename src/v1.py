@@ -83,7 +83,7 @@ def search(config_dict, data):
         state_filter = "ACTIVE" if is_active else "*"
         lang_filter = '{}'.format(lang) if lang is not None else '*'
         param_dict = {'wt':'json',
-                      'fl':'author_id',
+                      'fl':'author_id,name,reg_date,read_count',
                       'sort':'score desc, read_count desc',
                       'rows':limit,
                       'start':offset,
@@ -100,15 +100,22 @@ def search(config_dict, data):
             data = json.loads(response.text)
             author_count = data['response']['numFound']
             for row in data['response']['docs']:
-                author.append(row['author_id'])
-
+                temp = {}
+                temp['author_id'] = row['author_id']
+                if 'name' in row:
+                    temp['name'] = row['name']
+                if 'reg_date' in row:
+                    temp['reg_date'] = row['reg_date']
+                if 'read_count' in row:
+                    temp['read_count'] = row['read_count']
+                author.append(temp)
 
         #fetch pratilipis
         #prepare url for solr
         state_filter = "PUBLISHED" if is_active else "*"
         lang_filter = '{}'.format(lang) if lang is not None else '*'
         param_dict = {'wt':'json', 
-                      'fl':'pratilipi_id', 
+                      'fl':'pratilipi_id,pratilipi_type,title,read_count', 
                       'sort':'score desc, read_count desc', 
                       'rows':limit,
                       'start':offset,
@@ -125,36 +132,30 @@ def search(config_dict, data):
             data = json.loads(response.text)
             pratilipi_count = data['response']['numFound']
             for row in data['response']['docs']:
-                pratilipi.append(row['pratilipi_id'])
+                temp = {}
+                temp['pratilipi_id'] = row['pratilipi_id']
+                if 'pratilipi_type' in row:
+                    temp['pratilipi_type'] = row['pratilipi_type']
+                if 'title' in row:
+                    temp['title'] = row['title']
+                if 'read_count' in row:
+                    temp['read_count'] = row['read_count']
+                pratilipi.append(temp)
 
         #generate author response
         response = {}
-        """
         if author_count > 0:
             response['authors_found'] = author_count
-            url = "{}".format(config_dict['author_url'])
-            param_dict = {'id':author}
-            service_response = requests.get(url, params=param_dict)
-            if service_response.status_code == 200:
-                response['authors'] = json.loads(service_response.text)
-            else:
-                print log_formatter(inspect.stack()[0][3], "call failed to author service")
+            response['authors'] = author
 
         #generate pratilipi response
         if pratilipi_count > 0:
             response['pratilipis_found'] = pratilipi_count
-            url = "{}".format(config_dict['pratilipi_url'])
-            param_dict = {'id':pratilipi}
-            service_response = requests.get(url, params=param_dict)
-            if service_response.status_code == 200:
-                response['pratilips'] = json.loads(service_response.text)
-            else:
-                print log_formatter(inspect.stack()[0][3], "call failed to pratilipi service")
+            response['pratilips'] = pratilipi
 
         #if response is empty
         if not bool(response):
             return [204, "No Content"]
-        """
 
         #register request for analysis
         param_dict = {"lang": lang,

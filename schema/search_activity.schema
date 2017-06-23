@@ -1028,8 +1028,8 @@
 
     <field name="activity_date" type="tdate" indexed="true" stored="true" multiValued="false"/>
     <field name="activity_hour" type="long" indexed="true" stored="true" multiValued="false"/>
-    <field name="platform" type="string" indexed="true" stored="false" multiValued="false"/>
-    <field name="lang" type="string" indexed="true" stored="false" multiValued="false"/>
+    <field name="platform" type="string" indexed="true" stored="true" multiValued="false"/>
+    <field name="lang" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="keyword" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="counter" type="long" indexed="true" stored="true" multiValued="false"/>
 </schema>

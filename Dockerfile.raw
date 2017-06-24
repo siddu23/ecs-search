@@ -1,11 +1,4 @@
-#devo
-#FROM 381780986962.dkr.ecr.ap-southeast-1.amazonaws.com/python_app_base_img:1.0
-
-#gamma
-#FROM 370531249777.dkr.ecr.ap-southeast-1.amazonaws.com/gamma/python_app_base_img:1.0
-
-#prod
-FROM 370531249777.dkr.ecr.ap-southeast-1.amazonaws.com/prod/python_app_base_img:1.0
+FROM $DOCKER_REPO/python_app_base_img:1.0
 
 #set timezone
 RUN rm /etc/localtime

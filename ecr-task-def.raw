@@ -6,6 +6,7 @@
             "image": "$DOCKER_REPO/$APP_NAME:$APP_VERSION",
             "cpu": 128,
             "memory": 516,
+            "memoryReservation": 256,
             "portMappings": [
                 {
                     "containerPort": 80,
@@ -16,7 +17,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "$STAGE-search",
+                    "awslogs-group": "$STAGE-$APP_NAME",
                     "awslogs-region": "ap-southeast-1",
                     "awslogs-stream-prefix": "$APP_NAME"
                 }

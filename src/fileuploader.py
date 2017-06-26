@@ -10,6 +10,7 @@ import io
 import sys
 import gzip
 import simplejson as json
+import csv
 
 PATH = '/home/gauri/Downloads'
 
@@ -116,6 +117,44 @@ print "Author Total: ", line_cntr, " Failed: ", failed_line_cntr
 
 #sys.exit(1)
 
+
+# Category Data
+#tag data
+input_file_name = PATH + '/TAG.csv'
+tag = {}
+try:
+    with open(input_file_name, 'rb') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        for row in reader:
+            tag[row[0]] = ','.join([row[2], row[3], row[4]])
+except Exception as err:
+    print "Failed while reading Tag data - ", str(err)
+
+
+#pratilipi tag data
+input_file_name = PATH + '/PRATILIPI_TAG.csv'
+pratilipi_tag_map = {}
+try:
+    with open(input_file_name, 'rb') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        for row in reader:
+            genre = None
+            if row[1] in tag:
+                genre = tag[row[1]]
+
+            if genre is None:
+                continue
+
+            if row[0] not in pratilipi_tag_map:
+                pratilipi_tag_map[row[0]] = genre
+            else:
+                pratilipi_tag_map[row[0]] = ','.join([pratilipi_tag_map[row[0]], genre])
+except Exception as err:
+    print "Failed while reading Pratilipi Tag data - ", str(err)
+
+tag = {}
+
+
 # Pratilipi Data
 input_file_name = PATH + '/PRATILIPI'
 #input_file_name = PATH + '/pratilipi.json'
@@ -151,7 +190,7 @@ try:
                 if 'TITLE_EN' in row and row['TITLE_EN'] is not None:
                     temp['title_en'] = row['TITLE_EN']
                 temp['total_rating'] = row.get('TOTAL_RATING', 0)
-                temp['genre'] = None
+                temp['genre'] = pratilipi_tag_map.get(temp['pratilipi_id'], None)
                 if row['AUTHOR_ID'] in author:
                     if 'name' in author[row['AUTHOR_ID']]:
                         temp['author_name'] = author[row['AUTHOR_ID']]['name']

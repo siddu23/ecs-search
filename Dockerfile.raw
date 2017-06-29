@@ -30,7 +30,7 @@ COPY container_conf/search_init.sh /search/
 WORKDIR /search
 
 #install dependencies for search
-RUN pip install -r requirements.txt
+RUN pip install -q -r requirements.txt
 
 #container port expose
 EXPOSE 80

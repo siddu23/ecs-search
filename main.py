@@ -65,8 +65,6 @@ def health():
     """
     health - to check health of the api
     """
-
-    #print log_formatter(inspect.stack()[0][3], "health check - OK")
     result = [200, "OK", {"state":"healthy"}]
     return api_response(result)
 

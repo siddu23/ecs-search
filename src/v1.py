@@ -151,6 +151,7 @@ def author_data(config_dict, pdict):
             headers = {"User-Id": str(pdict['userid'])}
             print log_formatter(inspect.stack()[0][3], "called author service")
             print log_formatter(inspect.stack()[0][3], param_dict)
+            print log_formatter(inspect.stack()[0][3], headers)
             
             service_response = requests.get(url, params=param_dict, headers=headers)
             print log_formatter(inspect.stack()[0][3], "done author service")
@@ -198,6 +199,8 @@ def pratilipi_data(config_dict, pdict):
         pratilipi = []
         pratilipi_count = 0
         headers = {"User-Id": str(pdict['userid'])}
+        print log_formatter(inspect.stack()[0][3], "pratilipi headers")
+        print log_formatter(inspect.stack()[0][3], headers)
         response = requests.get(url, params=param_dict, headers=headers)
         if response.status_code == 200:
             data = json.loads(response.text)

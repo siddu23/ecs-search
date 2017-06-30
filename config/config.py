@@ -18,3 +18,6 @@ elif os.environ["STAGE"] == "prod":
 elif os.environ["STAGE"] == "devo":
     SOLR_URL = "http://ip-172-31-16-221.ap-southeast-1.compute.internal:8983/solr"
     REDIS_URL = "ecs-search.e6ocw5.0001.apse1.cache.amazonaws.com"
+elif os.environ["STAGE"] == "local":
+    SOLR_URL = "http://localhost:8983/solr"
+    REDIS_URL = "localhost"

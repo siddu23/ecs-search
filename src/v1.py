@@ -174,10 +174,10 @@ def author_data(config_dict, pdict):
     except Exception as err:
         print log_formatter(inspect.stack()[0][3], "failed while searching - {}".format(str(err)), "ERROR")
         raise Exception('failed while processing author data')
-    return response
+    return response, author
 
 
-def pratilipi_data(config_dict, pdict):
+def pratilipi_data(config_dict, pdict, author_found_list):
     try:
         #fetch pratilipis
         #prepare url for solr
@@ -196,13 +196,33 @@ def pratilipi_data(config_dict, pdict):
         #prepare pratilipi dict
         pratilipi = []
         pratilipi_count = 0
-        print log_formatter(inspect.stack()[0][3], "pratilipi headers")
         response = requests.get(url, params=param_dict)
         if response.status_code == 200:
             data = json.loads(response.text)
             pratilipi_count = data['response']['numFound']
             for row in data['response']['docs']:
                 pratilipi.append(row['pratilipi_id'])
+
+        #optimise result
+        if pratilipi_count == 0:
+            #get pratilipi's for found author's
+            param_dict = {'wt':'json',
+                          'fl':'pratilipi_id',
+                          'sort':'score desc, read_count desc',
+                          'rows':pdict['pratilipi_limit'],
+                          'start':pdict['pratilipi_offset'],
+                          'q':'author_id:({}) AND state:{} AND lang:{}'.format(' '.join(str(x) for x in author_found_list), state_filter, lang_filter)}
+            url = "{}/{}".format(config_dict['solr_url'], "pratilipi/select")
+            print log_formatter(inspect.stack()[0][3], "solr url %s" % url)
+
+            #prepare pratilipi dict
+            response = requests.get(url, params=param_dict)
+            if response.status_code == 200:
+                data = json.loads(response.text)
+                pratilipi_count = data['response']['numFound']
+                for row in data['response']['docs']:
+                    pratilipi.append(row['pratilipi_id'])
+
 
         #generate pratilipi response
         response = {}
@@ -252,17 +272,18 @@ def search(config_dict, data, user_id):
     response = {}
     author_found = 0
     pratilipi_found = 0
+    author_found_list = []
 
     try:
         if param_dict['author_limit'] > 0:
-            response['author'] = author_data(config_dict, param_dict)
+            response['author'], author_found_list = author_data(config_dict, param_dict)
             author_found = response['author']['numberFound']
     except Exception as err:
         print log_formatter(inspect.stack()[0][3], str(err))
 
     try:
         if param_dict['pratilipi_limit'] > 0:
-            response['pratilipi'] = pratilipi_data(config_dict, param_dict)
+            response['pratilipi'] = pratilipi_data(config_dict, param_dict, author_found_list)
             pratilipi_found = response['pratilipi']['numberFound']
     except Exception as err:
         print log_formatter(inspect.stack()[0][3], str(err))

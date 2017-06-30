@@ -12,7 +12,7 @@ import gzip
 import simplejson as json
 import csv
 
-PATH = '/home/gauri/Downloads'
+PATH = '/home/gauri/Downloads/solr_data'
 
 
 """

@@ -91,7 +91,7 @@ def trending_search(config_dict, data):
                       'group.field':'keyword',
                       'rows':100000,
                       'fl':'keyword',
-                      'q':'lang:{} AND activity_date:[NOW-10DAY TO NOW]'.format(lang)}
+                      'q':'lang:{} AND activity_date:[NOW-1DAY TO NOW]'.format(lang)}
         url = "{}/{}".format(config_dict['solr_url'], "search_activity/select")
 
         print log_formatter(inspect.stack()[0][3], "solr url %s" % url)
@@ -136,6 +136,9 @@ def author_data(config_dict, pdict):
         author = []
         author_count = 0
         response = requests.get(url, params=param_dict)
+        print "************ url ", url
+        print "*********** param ", param_dict
+
         if response.status_code == 200:
             data = json.loads(response.text)
             author_count = data['response']['numFound']

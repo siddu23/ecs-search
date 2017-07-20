@@ -38,7 +38,7 @@ def readfile(filepath):
 
 # Authors Data
 input_file_name = PATH + '/AUTHOR'
-#input_file_name = PATH + '/test.json'
+#input_file_name = PATH + '/a.txt'
 out_file_name = PATH + '/author_solr.json.gz'
 author = {}
 line_cntr = 0
@@ -51,10 +51,11 @@ try:
 
             try:
                 temp = {}
-                temp['author_id'] = row['AUTHOR_ID']
+                temp['author_id'] = str(row['AUTHOR_ID'])
                 author[row['AUTHOR_ID']] = {}
+                author[row['AUTHOR_ID']]['user_id'] = 0
                 temp['user_id'] = 0
-                if 'USER_ID' in row:
+                if 'USER_ID' in row and row['USER_ID'] is not None:
                     temp['user_id'] = row['USER_ID']
                     author[row['AUTHOR_ID']]['user_id'] = temp['user_id']
                 if 'FIRST_NAME' in row and row['FIRST_NAME'] is not None:

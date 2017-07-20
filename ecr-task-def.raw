@@ -17,7 +17,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "$STAGE-$APP_NAME",
+                    "awslogs-group": "$PREFIX$STAGE-$APP_NAME",
                     "awslogs-region": "ap-southeast-1",
                     "awslogs-stream-prefix": "$APP_NAME"
                 }

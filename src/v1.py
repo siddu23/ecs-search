@@ -154,6 +154,9 @@ def author_data(config_dict, pdict):
             print log_formatter(inspect.stack()[0][3], "called author service")
             print log_formatter(inspect.stack()[0][3], param_dict)
             
+            print "************ author service url ", url
+            print "*********** author service param ", param_dict
+
             service_response = requests.get(url, params=param_dict)
             print log_formatter(inspect.stack()[0][3], "done author service")
             if service_response.status_code == 200:
@@ -235,6 +238,8 @@ def pratilipi_data(config_dict, pdict, author_found_list):
             param_dict = {'ids':str(pratilipi), 'userId':pdict['userid']}
             print log_formatter(inspect.stack()[0][3], "called pratilipi service")
             print log_formatter(inspect.stack()[0][3], param_dict)
+            print "*********** pratilipi service url ", url
+            print "*********** pratilipi service param ", param_dict
             service_response = requests.get(url, params=param_dict)
             print log_formatter(inspect.stack()[0][3], "done pratilipi service")
             if service_response.status_code == 200:

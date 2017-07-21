@@ -21,3 +21,5 @@ elif os.environ["STAGE"] == "devo":
 elif os.environ["STAGE"] == "local":
     SOLR_URL = "http://localhost:8983/solr"
     REDIS_URL = "localhost"
+    REDIS_PORT = 6379
+    REDIS_DB = 9

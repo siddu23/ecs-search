@@ -1,8 +1,8 @@
 import os
 
 SOLR_URL = "http://ip-172-31-16-221.ap-southeast-1.compute.internal:8983/solr"
-PRATILIPI_SERVICE_URL = "http://{}/{}".format(os.environ['API_END_POINT'], "pratilipis")
-AUTHOR_SERVICE_URL = "http://{}/{}".format(os.environ['API_END_POINT'], "authors")
+PRATILIPI_SERVICE_URL = "{}/{}".format(os.environ['API_END_POINT'], "pratilipis")
+AUTHOR_SERVICE_URL = "{}/{}".format(os.environ['API_END_POINT'], "authors")
 REDIS_URL = "ecs-search.e6ocw5.0001.apse1.cache.amazonaws.com"
 REDIS_PORT = 8080
 REDIS_DB = 9
@@ -21,3 +21,5 @@ elif os.environ["STAGE"] == "devo":
 elif os.environ["STAGE"] == "local":
     SOLR_URL = "http://localhost:8983/solr"
     REDIS_URL = "localhost"
+    REDIS_PORT = 6379
+    REDIS_DB = 9

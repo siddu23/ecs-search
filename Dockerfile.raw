@@ -1,4 +1,4 @@
-FROM $DOCKER_REPO/python_app_base_img:1.0
+FROM $DOCKER_REPO/ubuntu-nginx:1.0
 
 #set timezone
 RUN rm /etc/localtime

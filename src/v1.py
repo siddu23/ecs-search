@@ -150,7 +150,7 @@ def author_data(config_dict, pdict):
         if author_count > 0 and pdict['author_offset'] < author_count:
             response['authors_found'] = author_count
             url = "{}".format(config_dict['author_url'])
-            param_dict = {'ids':str(author), 'userId':pdict['userid']}
+            param_dict = {'id':','.join([str(x) for x in author]), 'userId':pdict['userid']}
             print log_formatter(inspect.stack()[0][3], "called author service")
             print log_formatter(inspect.stack()[0][3], param_dict)
             
@@ -235,11 +235,9 @@ def pratilipi_data(config_dict, pdict, author_found_list):
         if pratilipi_count > 0 and pdict['pratilipi_offset'] < pratilipi_count:
             response['pratilipis_found'] = pratilipi_count
             url = "{}".format(config_dict['pratilipi_url'])
-            param_dict = {'ids':str(pratilipi), 'userId':pdict['userid']}
+            param_dict = {'id':','.join([str(x) for x in pratilipi]), 'userId':pdict['userid']}
             print log_formatter(inspect.stack()[0][3], "called pratilipi service")
             print log_formatter(inspect.stack()[0][3], param_dict)
-            print "*********** pratilipi service url ", url
-            print "*********** pratilipi service param ", param_dict
             service_response = requests.get(url, params=param_dict)
             print log_formatter(inspect.stack()[0][3], "done pratilipi service")
             if service_response.status_code == 200:

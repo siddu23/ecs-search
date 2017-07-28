@@ -150,14 +150,15 @@ def author_data(config_dict, pdict):
         if author_count > 0 and pdict['author_offset'] < author_count:
             response['authors_found'] = author_count
             url = "{}".format(config_dict['author_url'])
-            param_dict = {'id':','.join([str(x) for x in author]), 'userId':pdict['userid']}
+            #param_dict = {'id':','.join([str(x) for x in author]), 'userId':pdict['userid']}
+            param_dict = {'id':','.join([str(x) for x in author])}
             print log_formatter(inspect.stack()[0][3], "called author service")
             print log_formatter(inspect.stack()[0][3], param_dict)
             
             print "************ author service url ", url
             print "*********** author service param ", param_dict
 
-            service_response = requests.get(url, params=param_dict)
+            service_response = requests.get(url, params=param_dict, headers={"User-Id":pdict['userid']})
             print log_formatter(inspect.stack()[0][3], "done author service")
             if service_response.status_code == 200:
                 response = {'authorList': [], 'authorCursor': pdict['author_offset'] + pdict['author_limit'] + 1, 'numberFound': author_count}
@@ -165,7 +166,7 @@ def author_data(config_dict, pdict):
                 found_auth = [i for i in found_auth if i] #remove empty keys
                 for row in found_auth:
                     temp = {}
-                    temp['authorId'] = row['id']
+                    temp['authorId'] = row['authorId']
                     temp['name'] = row['fullName'] if 'fullName' in row else row['fullNameEn']
                     temp['pageUrl'] = row['pageUrl'] if 'pageUrl' in row else ''
                     temp['imageUrl'] = row['coverImageUrl'] if 'coverImageUrl' in row else ''

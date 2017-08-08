@@ -155,10 +155,13 @@ def author_data(config_dict, pdict):
             print log_formatter(inspect.stack()[0][3], "called author service")
             print log_formatter(inspect.stack()[0][3], param_dict)
             
-            print "************ author service url ", url
-            print "*********** author service param ", param_dict
+            print "******>> author service url ", url
+            print "******>> author service param ", param_dict
+            print "******>> author service header ", {"User-Id":pdict['userid']}
 
             service_response = requests.get(url, params=param_dict, headers={"User-Id":pdict['userid']})
+            print "******>> author service response ", service_response.text
+
             print log_formatter(inspect.stack()[0][3], "done author service")
             if service_response.status_code == 200:
                 response = {'authorList': [], 'authorCursor': pdict['author_offset'] + pdict['author_limit'] + 1, 'numberFound': author_count}

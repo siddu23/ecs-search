@@ -214,7 +214,7 @@ def pratilipi_data(config_dict, pdict, author_found_list):
                 pratilipi.append(row['pratilipi_id'])
 
         #optimise result
-        if pratilipi_count == 0:
+        if pratilipi_count == 0 and len(author_found_list) > 0:
             #get pratilipi's for found author's
             param_dict = {'wt':'json',
                           'fl':'pratilipi_id',

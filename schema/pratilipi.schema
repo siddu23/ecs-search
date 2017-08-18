@@ -1034,7 +1034,7 @@
     <field name="chapter_count" type="long" indexed="false" stored="false" multiValued="false" />
     <field name="total_rating" type="long" indexed="false" stored="false" multiValued="false" />
     <field name="author_id" type="long" indexed="true" stored="true" required="true" multiValued="false" />
-    <field name="cover_image" type="long" indexed="true" stored="true" multiValued="false" />
+    <field name="cover_image" type="string" indexed="true" stored="true" multiValued="false" />
     <field name="pratilipi_type" type="string" indexed="true" stored="true" multiValued="false" />
     <field name="content_type" type="string" indexed="true" stored="true" multiValued="false" />
     <field name="title" type="string" indexed="true" stored="true" multiValued="false" />
@@ -1044,6 +1044,7 @@
     <field name="summary" type="text_general" indexed="true" stored="false" multiValued="false" />
     <field name="genre" type="string" indexed="true" stored="true" multiValued="false" />
     <field name="listing_date" type="tdate" indexed="true" stored="true" multiValued="false" />
+    <field name="state" type="string" indexed="true" stored="true" multiValued="false" />
 
 </schema>
 

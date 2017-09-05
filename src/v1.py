@@ -119,6 +119,9 @@ def trending_search(config_dict, data):
             for ky in trending_keywords.keys():
                 k1 = _encode_data(sw)
                 k2 = _encode_data(ky)
+                
+                print log_formatter(inspect.stack()[0][3], k1)
+                print log_formatter(inspect.stack()[0][3], k2)
                 if k1 in k2:
                     del(trending_keywords[ky])
 

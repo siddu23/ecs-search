@@ -5,6 +5,17 @@ import inspect
 import simplejson as json
 import redis
 import threading
+import stopword
+
+
+def _encode_data(data_str):
+    data_str = data_str.lower()
+    try:
+        data_str.encode('utf-8')
+    except UnicodeDecodeError:
+        return data_str
+    else:
+        return data_str.encode('utf-8')
 
 
 def register_search_activity(url, data):
@@ -103,6 +114,13 @@ def trending_search(config_dict, data):
             data = json.loads(response.text)
             for row in data['grouped']['keyword']['groups']:
                 trending_keywords[row['groupValue']] = row['doclist']['numFound']
+
+        for sw in stopword.STOP_WORDS:
+            for ky in trending_keywords.keys():
+                k1 = _encode_data(sw)
+                k2 = _encode_data(ky)
+                if k1 in k2:
+                    del(trending_keywords[ky])
 
         temp = sorted(trending_keywords, key=trending_keywords.get, reverse=True)
         if len(temp) == 0:

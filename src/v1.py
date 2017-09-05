@@ -91,6 +91,7 @@ def trending_search(config_dict, data):
     Trending Search
     - fetch data from datastore(solr) for trending search keywords
     """
+    print "----> in trending"
     #parse query dict
     lang = data.get('language', '*')
     platform = data.get('platform', 'web')
@@ -107,6 +108,7 @@ def trending_search(config_dict, data):
                       'fl':'keyword',
                       'q':'lang:{} AND activity_date:[NOW-1DAY TO NOW]'.format(lang)}
         url = "{}/{}".format(config_dict['solr_url'], "search_activity/select")
+        print "----> in trending, get data"
 
         print log_formatter(inspect.stack()[0][3], "solr url %s" % url)
 
@@ -117,6 +119,8 @@ def trending_search(config_dict, data):
             data = json.loads(response.text)
             for row in data['grouped']['keyword']['groups']:
                 trending_keywords[row['groupValue']] = row['doclist']['numFound']
+
+        print "----> in trending, prepared data"
 
         for sw in stopword.STOP_WORDS:
             for ky in trending_keywords.keys():
@@ -129,6 +133,7 @@ def trending_search(config_dict, data):
                 if k1 in k2:
                     del(trending_keywords[ky])
 
+        print "----> in trending, now sorting"
         temp = sorted(trending_keywords, key=trending_keywords.get, reverse=True)
         if len(temp) == 0:
             return [200, "Success"]

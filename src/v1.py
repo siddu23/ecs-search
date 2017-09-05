@@ -9,6 +9,9 @@ import stopword
 
 
 def _encode_data(data_str):
+    if data_str is None:
+        return data_str
+
     data_str = data_str.lower()
     try:
         data_str.encode('utf-8')

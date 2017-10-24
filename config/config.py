@@ -5,7 +5,7 @@ PRATILIPI_SERVICE_URL = "{}/{}".format(os.environ['API_END_POINT'], "pratilipis"
 AUTHOR_SERVICE_URL = "{}/{}".format(os.environ['API_END_POINT'], "authors")
 REDIS_URL = "devo-ecs.e6ocw5.0001.apse1.cache.amazonaws.com"
 REDIS_PORT = 8080
-REDIS_DB = 9
+REDIS_DB = 6
 TOP_SEARCH_LIMIT = 10
 TOP_SEARCH_AGE_IN_MIN = 3600
 

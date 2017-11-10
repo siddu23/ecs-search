@@ -23,11 +23,5 @@
                 }
             }
         }
-    ],
-    "placementConstraints": [
-        {
-            "expression": "attribute:instance-category-default == true",
-            "type": "memberOf"
-        }
     ]
 }
